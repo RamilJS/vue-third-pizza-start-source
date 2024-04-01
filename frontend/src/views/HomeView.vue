@@ -8,19 +8,21 @@
             <h2 class="title title--small sheet__title">Выберите тесто</h2>
             <div class="sheet__content dough">
               <label
-                v-for="type in dough"
-                :key="type.id"
-                class="dough__input dough__input--light"
+                v-for="doughType in doughItems"
+                :key="doughType.id"
+                class="dough__input"
               >
                 <input
                   type="radio"
-                  name="dought"
-                  value="light"
+                  name="dough"
+                  :value="doughType.value"
                   class="visually-hidden"
                   checked
                 />
-                <b>{{ type.name }}</b>
-                <span>{{ type.description }}</span>
+                <img :src="getImage(doughType.image)" :alt="doughType.name" />
+
+                <b>{{ doughType.name }}</b>
+                <span>{{ doughType.description }}</span>
               </label>
             </div>
           </div>
@@ -31,17 +33,18 @@
             <h2 class="title title--small sheet__title">Выберите размер</h2>
             <div class="sheet__content diameter">
               <label
-                v-for="size in sizes"
-                :key="size.id"
-                class="diameter__input diameter__input--small"
+                v-for="sizeType in sizeItems"
+                :key="sizeType.id"
+                class="diameter__input"
+                :class="`diameter__input--${sizeType.value}`"
               >
                 <input
                   type="radio"
                   name="diameter"
-                  value="small"
+                  :value="sizeType.value"
                   class="visually-hidden"
                 />
-                <span>{{ size.name }}</span>
+                <span>{{ sizeType.name }}</span>
               </label>
             </div>
           </div>
@@ -55,27 +58,32 @@
             <div class="sheet__content ingredients">
               <div class="ingredients__sauce">
                 <p>Основной соус:</p>
-                <label class="radio ingredients__input">
-                  <input type="radio" name="sauce" value="tomato" checked />
-                  <span>Томатный</span>
-                </label>
-                <label class="radio ingredients__input">
-                  <input type="radio" name="sauce" value="creamy" />
-                  <span>Сливочный</span>
+
+                <label
+                  v-for="sauceType in sauceItems"
+                  :key="sauceType.id"
+                  class="radio ingredients__input"
+                >
+                  <input type="radio" name="sauce" :value="sauceType.value" />
+                  <span>{{ sauceType.name }}</span>
                 </label>
               </div>
 
               <div class="ingredients__filling">
                 <p>Начинка:</p>
-                <ul
-                  v-for="ingredient in ingredients"
-                  :key="ingredient.id"
-                  class="ingredients__list"
-                >
-                  <li class="ingredients__item">
-                    <span class="filling filling--mushrooms">
-                      {{ ingredient.name }}
-                    </span>
+                <ul class="ingredients__list">
+                  <li
+                    v-for="ingredientType in ingredientItems"
+                    :key="ingredientType.id"
+                    class="ingredients__item"
+                  >
+                    <div class="filling">
+                      <img
+                        :src="getImage(ingredientType.image)"
+                        :alt="ingredientType.name"
+                      />
+                      {{ ingredientType.name }}
+                    </div>
 
                     <div class="counter counter--orange ingredients__counter">
                       <button
@@ -136,7 +144,25 @@
 </template>
 
 <script setup>
-import dough from "../mocks/dough.json";
-import sizes from "../mocks/sizes.json";
-import ingredients from "../mocks/ingredients.json";
+import {
+  normalizeDough,
+  normalizeIngredients,
+  normalizeSauces,
+  normalizeSize,
+} from "@/common/helpers/normalize";
+
+import doughJSON from "@/mocks/dough.json";
+import ingredientsJSON from "@/mocks/ingredients.json";
+import saucesJSON from "@/mocks/sauces.json";
+import sizesJSON from "@/mocks/sizes.json";
+
+const doughItems = doughJSON.map(normalizeDough);
+const ingredientItems = ingredientsJSON.map(normalizeIngredients);
+const sauceItems = saucesJSON.map(normalizeSauces);
+const sizeItems = sizesJSON.map(normalizeSize);
+
+const getImage = (image) => {
+  // https://vitejs.dev/guide/assets.html#new-url-url-import-meta-url
+  return new URL(`../assets/img/${image}`, import.meta.url).href;
+};
 </script>
